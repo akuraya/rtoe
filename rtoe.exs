@@ -1,55 +1,38 @@
 defmodule Rtoe do
   # import Inflex
 
-  # Rtoe.html "/Users/kuraya/workspace/hear_rails/sayonala-old/db/migrate/20080704074215_create_accounts.rb"
+  # Rtoe.html "migration-file-path"
 
-  # def html(file) do
-  def html do
-    # {:ok, cat} = File.read file
-    {:ok, cat} = File.read "/Users/kuraya/workspace/hear_rails/sayonala-old/db/migrate/20080704074215_create_accounts.rb"
+  def html(file) do
+    {:ok, cat} = File.read file
 
     trim_cat = String.split(cat, "\n")
-
-    # cmd_map = %{context: "", Camel: "", lower: "", coolumns: []}
-
-
-    # lower = Enum.find(trim_cat, &(String.contains?("#{&1}", "create_table"))) |> String.trim()
 
     lower = trim_cat
       |> Enum.find( &(String.contains?("#{&1}", "create_table")))
       |> String.trim()
-
+      |> lower
 
     IO.inspect "lower is #{lower}"
 
-    #TRUE:String.contains?("    create_table :accounts do |t|", "create_table")
-    # Enum.find(trim_cat, &(String.contains?("    create_table :accounts do |t|", "create_table")))
+    camel = trim_cat
+      |> Enum.find( &(String.contains?("#{&1}", "class Create")))
+      |> String.trim()
+      |> camel
 
-    # "    create_table :accounts do |t|"
-    # String.contains?(trim_cat, "create_table")
+    IO.inspect "camel is #{camel}"
 
-    for l <- String.split(cat, "\n") do
-      line = String.trim(l)
-      IO.inspect "#{line}"
+    columns = trim_cat
+      |> Enum.filter( &(isColumn String.trim("#{&1}")))
+      |> Enum.map(fn str -> String.trim(str) end)
+      |> Enum.map(fn str -> column str end)
 
-      # if String.contains?(line, "create_table") do
-      #   IO.inspect "containes TRUE"
-      #   res = lower line
-      #   IO.inspect "#{res}"
-      # end
-      # IO.inspect "lower is #{cmd_map[:lower]}"
-    end
+    IO.inspect columns
+    IO.inspect "columns are #{columns}"
 
-
+    "mix phx.gen.html Context #{camel} #{lower} #{columns}"
   end
 
-  defp cmd_gen(cat) do
-    # Context and Camel and Lower
-    IO.puts "mix phx.gen.html Context Account accounts "
-    asd = "Elixir rocks" |> String.upcase
-  end
-
-  # "drop_table :accounts"
   # "    create_table :accounts do |t|"
   defp lower(ll) do
     case Regex.named_captures(~r/^create_table :(?<n>.*) do |t|$/, "#{ll}") do
@@ -60,10 +43,41 @@ defmodule Rtoe do
     end
   end
 
+  # class CreateAccounts < ActiveRecord::Migration
+  defp camel(ll) do
+    case Regex.named_captures(~r/^class Create(?<n>.*)s < ActiveRecord::Migration$/, "#{ll}") do
+      nil ->
+        ""
+      %{"n" => ans} ->
+        ans
+    end
+  end
 
-  # "      t.boolean :deleted, :default => false",
-  defp column(line) do
+  # "t.string :animal"
+  defp isColumn(ll) do
+    case Regex.named_captures(~r/^t.*$/, "#{ll}") do
+      nil ->
+        false
+      %{} ->
+        true
+    end
+  end
 
+  # "t.string :animal"
+  # "t.boolean :deleted, :default => false"
+  # "t.string :mail, :limit => 15"
+  # "t.string :lang, :limit => 2, :default => 'en'"
+  # "t.timestamps"
+  defp column(str) do
+    lc = String.split(str, ", ")
+    [head | tail] = lc
+
+    case Regex.named_captures(~r/^t.(?<type>.*) :(?<col>.*)$/, "#{head}") do
+      nil ->
+        ""
+      %{"type" => type, "col" => col} ->
+        "#{col}:#{type} "
+    end
   end
 
   # def deps do
