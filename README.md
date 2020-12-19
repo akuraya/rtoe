@@ -15,7 +15,7 @@ iex rtoe.ex
 ```
 
 ```elixir
-iex> Rtoe.html "~/ruby-project/db/20101010112233_create_samples.rb"
+iex> Rtoe.schema "~/ruby-project/db/20101010112233_create_samples.rb"
 ```
 
 1. configure migration file
