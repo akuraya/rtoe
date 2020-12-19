@@ -1,9 +1,9 @@
 defmodule Rtoe do
   # import Inflex
 
-  # Rtoe.html "migration-file-path"
+  # Rtoe.schema "migration-file-path"
 
-  def html(file) do
+  def schema(file) do
     {:ok, cat} = File.read file
 
     trim_cat = String.split(cat, "\n")
