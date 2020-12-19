@@ -30,7 +30,7 @@ defmodule Rtoe do
     IO.inspect columns
     IO.inspect "columns are #{columns}"
 
-    "mix phx.gen.html Context #{camel} #{lower} #{columns}"
+    "mix phx.gen.schema Context #{camel} #{lower} #{columns}"
   end
 
   # "    create_table :accounts do |t|"
