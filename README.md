@@ -4,20 +4,13 @@
 Ruby to Elixir = Rtoe
 
 # You can
-auto generate to mix.gen.html command.
+auto generate to mix.gen.schema command.
 
 # Usage
 
-```rtoe
-#mix deps.get
-
-iex rtoe.ex
+```zsh
+mix schema migration_file_path
 ```
 
-```elixir
-iex> Rtoe.schema "~/ruby-project/db/20101010112233_create_samples.rb"
-```
-
-1. configure migration file
-
-Enter
+1. configure migration file path
+2. Enter
